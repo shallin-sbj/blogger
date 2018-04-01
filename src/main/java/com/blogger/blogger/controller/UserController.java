@@ -1,7 +1,7 @@
 package com.blogger.blogger.controller;
 
 import com.blogger.blogger.domain.User;
-import com.blogger.blogger.repository.UerRepository;
+import com.blogger.blogger.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +18,7 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    private UerRepository uerRepository;
+    private UserRepository userRepository;
 
     /**
      * 从 用户存储库 获取用户列表
@@ -26,7 +26,7 @@ public class UserController {
      * @return
      */
     private List<User> getUserlist() {
-        Iterable<User> users = uerRepository.findAll();
+        Iterable<User> users = userRepository.findAll();
         List<User> list = new ArrayList<>();
         users.forEach(user -> list.add(user));
         return list;
@@ -52,7 +52,7 @@ public class UserController {
      */
     @GetMapping("{id}")
     public ModelAndView view(@PathVariable("id") Long id, Model model) {
-        User user =  uerRepository.findById(id).get();
+        User user =  userRepository.findById(id).get();
         model.addAttribute("user", user);
         model.addAttribute("title", "查看用户");
         return new ModelAndView("users/view", "userModel", model);
@@ -81,7 +81,7 @@ public class UserController {
      */
     @PostMapping
     public ModelAndView create(User user) {
-        user =  uerRepository.save(user);
+        user =  userRepository.save(user);
         return new ModelAndView("redirect:/users");
     }
 
@@ -93,7 +93,7 @@ public class UserController {
      */
     @GetMapping(value = "delete/{id}")
     public ModelAndView delete(@PathVariable("id") Long id, Model model) {
-        uerRepository.deleteById(id);
+        userRepository.deleteById(id);
         model.addAttribute("userList", getUserlist());
         model.addAttribute("title", "删除用户");
         return new ModelAndView("users/list", "userModel", model);
@@ -107,7 +107,7 @@ public class UserController {
      */
     @GetMapping(value = "modify/{id}")
     public ModelAndView modifyForm(@PathVariable("id") Long id, Model model) {
-        User user = uerRepository.findById(id).get();
+        User user = userRepository.findById(id).get();
         model.addAttribute("user", user);
         model.addAttribute("title", "修改用户");
         return new ModelAndView("users/form", "userModel", model);
