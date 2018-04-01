@@ -45,8 +45,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<User> listUsersByNameLike(String userName, Pageable pageable) {
-        userName = "%" + userName +"%";
-        return userRepository.findByNameLike(userName, pageable);
+    public Page<User> listUsersByNameLike(String username, Pageable pageable) {
+        username = "%" + username +"%";
+        return userRepository.findByNameLike(username, pageable);
+    }
+
+    @Override
+    public List<User> queryAllUser() {
+        return userRepository.findAll();
     }
 }

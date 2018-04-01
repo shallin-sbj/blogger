@@ -23,8 +23,8 @@ public class User {
     private Long id;
 
     @NotEmpty(message = "姓名不能为空")
-    @Size(min = 2,max = 20)
-    @Column(nullable = false,length = 20)
+    @Size(min = 2, max = 20)
+    @Column(nullable = false, length = 20)
     private String name;
 
     private String email;
@@ -32,7 +32,7 @@ public class User {
     /**
      * 账号
      */
-    private String userName;
+    private String username;
     /**
      * 密码
      */
@@ -48,6 +48,10 @@ public class User {
 
     private String remark;
 
+    /**
+     * 角色
+     */
+    private String authorities;
 
     @Override
     public String toString() {
@@ -55,7 +59,7 @@ public class User {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
-                ", userName='" + userName + '\'' +
+                ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", avatar='" + avatar + '\'' +
                 ", creatDt=" + creatDt +
