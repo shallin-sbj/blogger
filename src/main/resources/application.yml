@@ -17,14 +17,21 @@
     data:
       elasticsearch:
         cluster-name: localhost:9300
+  ## 配置日志信息
+  logging:
+    pattern:
+#      console: "%-d{yyyy-MM-dd HH:mm:ss} [ %p ] [ %c ] %m%n"
+      level: info
+  debug: true
+  server:
+    port: 8080
+
 
 #    ## 启动h2控制台
 #    h2:
 #      console:
 #        enabled: true
 
-
-# ES的配置
 
 
 

@@ -102,9 +102,9 @@ $(function() {
 		$.ajax({ 
 			 url: "/users/" + $(this).attr("userId") , 
 			 type: 'DELETE', 
-			 beforeSend: function(request) {
-                 request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token 
-             },
+             // beforeSend: function(request) {
+             //     request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+             // },
 			 success: function(data){
 				 if (data.success) {
 					 // 从新刷新主界面
