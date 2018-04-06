@@ -3,7 +3,7 @@ package com.blogger.blogger.service;
 import com.blogger.blogger.domain.Authority;
 
 /**
- * 权限服务
+ *  权限服务接口
  */
 public interface AuthorityService {
     /**

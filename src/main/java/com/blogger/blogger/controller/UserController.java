@@ -1,6 +1,7 @@
 package com.blogger.blogger.controller;
 
 import com.blogger.blogger.aop.SystemControllerAnnotation;
+import com.blogger.blogger.domain.Authority;
 import com.blogger.blogger.domain.User;
 import com.blogger.blogger.service.AuthorityService;
 import com.blogger.blogger.service.UserService;
@@ -109,6 +110,10 @@ public class UserController {
     @PostMapping
     @SystemControllerAnnotation(description = "新建客户")
     public ResponseEntity<Response> create(User user, Long authorityId) {
+        List<Authority> authorities = new ArrayList<>();
+        authorities.add(authorityService.getAuthorityById(authorityId));
+        user.setAuthorities(authorities);
+
         try {
             User addUser = userService.saveOrUpdateUser(user);
         } catch (ConstraintViolationException e) {

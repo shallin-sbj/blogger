@@ -18,7 +18,9 @@ import java.util.List;
  */
 @Controller
 public class MainController {
-
+    /**
+     * 用户（博主）权限
+     */
     private static final Long ROLE_USER_AUTHORITY_ID = 2L;
 
     @Autowired
