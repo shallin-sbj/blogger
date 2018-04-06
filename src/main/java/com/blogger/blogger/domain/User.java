@@ -40,8 +40,8 @@ public class User {
     @Column(nullable = false, length = 20)
     private String name;
 
-    @NotEmpty
-    @Size(min = 3, max = 70)
+    @NotEmpty(message = "邮箱不能为空")
+    @Size(max = 50)
     @Email(message = "邮箱格式不对")
     @Column(nullable = false, length = 50, unique = true)
     private String email;
@@ -76,6 +76,16 @@ public class User {
     private Date modifyDt;
 
     private String remark;
+
+    protected User() { // JPA 的规范要求无参构造函数；设为 protected 防止直接使用
+    }
+
+    public User(String name, String email, String username, String password) {
+        this.name = name;
+        this.email = email;
+        this.username = username;
+        this.password = password;
+    }
 
     @Override
     public String toString() {

@@ -6,6 +6,9 @@ import com.blogger.blogger.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -13,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService,UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
@@ -35,7 +38,7 @@ public class UserServiceImpl implements UserService {
         if (user.isPresent()){
             return user.get();
         }
-        return new User();
+        return new User(null,null,null,null);
     }
 
     @Transactional
@@ -53,5 +56,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> queryAllUser() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return (UserDetails) userRepository.findByUsername(username);
     }
 }

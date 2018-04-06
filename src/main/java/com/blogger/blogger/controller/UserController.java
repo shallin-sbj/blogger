@@ -94,7 +94,7 @@ public class UserController {
     @GetMapping("/add")
     @SystemControllerAnnotation(description = "获取 form 表单页面")
     public ModelAndView createForm(Model model) {
-        model.addAttribute("user", new User());
+        model.addAttribute("user", new User(null,null,null,null));
         return new ModelAndView("users/add", "userModel", model);
     }
 

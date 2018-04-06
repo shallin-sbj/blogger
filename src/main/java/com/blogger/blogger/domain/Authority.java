@@ -1,6 +1,7 @@
 package com.blogger.blogger.domain;
 
 import lombok.Data;
+import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 
@@ -9,7 +10,7 @@ import javax.persistence.*;
  */
 @Entity
 @Data
-public class Authority {
+public class Authority implements GrantedAuthority {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -18,5 +19,10 @@ public class Authority {
 
     @Column(nullable = false)
     private String name;
+
+    @Override
+    public String getAuthority() {
+        return name;
+    }
 
 }

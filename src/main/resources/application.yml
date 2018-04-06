@@ -21,7 +21,7 @@
   logging:
     pattern:
 #      console: "%-d{yyyy-MM-dd HH:mm:ss} [ %p ] [ %c ] %m%n"
-      level: info
+#      level: info
   debug: true
   server:
     port: 8080
