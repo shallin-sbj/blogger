@@ -8,6 +8,8 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -37,7 +39,7 @@ public class User implements UserDetails {
     @NotEmpty(message = "邮箱不能为空")
     @Size(max = 50)
     @Email(message = "邮箱格式不对")
-    @Column(nullable = false, length = 50, unique = true)
+    @Column(nullable = false, length = 50, unique = true)    // true 暂且改为可以重复
     private String email;
 
     /**
@@ -66,7 +68,6 @@ public class User implements UserDetails {
 
     private String remark;
 
-
     @ManyToMany(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
     @JoinTable(name = "user_authority", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "authority_id", referencedColumnName = "id"))
@@ -78,6 +79,12 @@ public class User implements UserDetails {
         for(GrantedAuthority authority : this.authorities)
             simpleAuthorities.add(new SimpleGrantedAuthority(authority.getAuthority()));
         return simpleAuthorities;
+    }
+
+    public void setEncodePassword(String password) {
+        PasswordEncoder encoder = new BCryptPasswordEncoder();
+        String encodePasswd = encoder.encode(password);
+        this.password = encodePasswd;
     }
 
     protected User() { // JPA 的规范要求无参构造函数；设为 protected 防止直接使用
@@ -123,6 +130,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 }

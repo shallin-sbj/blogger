@@ -14,6 +14,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -27,6 +30,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/users")
+@PreAuthorize("hasAuthority('ROLE_ADMIN')")  // 指定角色权限才能操作方法
 public class UserController {
 
     @Autowired
@@ -114,6 +118,21 @@ public class UserController {
         authorities.add(authorityService.getAuthorityById(authorityId));
         user.setAuthorities(authorities);
 
+        if (user.getId() == null) {
+            user.setEncodePassword(user.getPassword()); // 加密密码
+        } else {
+            // 判断密码是否做了变更
+            User originalUser = userService.queryUserById(user.getId());
+            String rawPassword = originalUser.getPassword();
+            PasswordEncoder encoder = new BCryptPasswordEncoder();
+            String encodePasswd = encoder.encode(user.getPassword());
+            boolean isMatch = encoder.matches(rawPassword, encodePasswd);
+            if (!isMatch) {
+                user.setEncodePassword(user.getPassword());
+            } else {
+                user.setPassword(user.getPassword());
+            }
+        }
         try {
             User addUser = userService.saveOrUpdateUser(user);
         } catch (ConstraintViolationException e) {
@@ -121,33 +140,6 @@ public class UserController {
             return ResponseEntity.ok().body(response);
         }
         return ResponseEntity.ok().body(new Response(true, "处理成功", user));
-//        List<Authority> authorities = new ArrayList<>();
-//        authorities.add(authorityService.getAuthorityById(authorityId));
-//        user.setAuthorities(authorities);
-//
-//        if(user.getId() == null) {
-//            user.setEncodePassword(user.getPassword()); // 加密密码
-//        }else {
-//            // 判断密码是否做了变更
-//            User originalUser = userService.getUserById(user.getId());
-//            String rawPassword = originalUser.getPassword();
-//            PasswordEncoder  encoder = new BCryptPasswordEncoder();
-//            String encodePasswd = encoder.encode(user.getPassword());
-//            boolean isMatch = encoder.matches(rawPassword, encodePasswd);
-//            if (!isMatch) {
-//                user.setEncodePassword(user.getPassword());
-//            }else {
-//                user.setPassword(user.getPassword());
-//            }
-//        }
-//
-//        try {
-//            userService.saveUser(user);
-//        }  catch (ConstraintViolationException e)  {
-//            return ResponseEntity.ok().body(new Response(false, ConstraintViolationExceptionHandler.getMessage(e)));
-//        }
-//
-//        return ResponseEntity.ok().body(new Response(true, "处理成功", user));
     }
 
     /**

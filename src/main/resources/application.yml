@@ -11,7 +11,7 @@
       password: root
       driver-class-name: com.mysql.cj.jdbc.Driver
     jpa:
-      show-sql: true
+      show-sql: false
       hibernate:
         ddl-auto: update
     data:
@@ -22,7 +22,7 @@
     pattern:
 #      console: "%-d{yyyy-MM-dd HH:mm:ss} [ %p ] [ %c ] %m%n"
 #      level: info
-  debug: true
+  debug: false
   server:
     port: 8080
 
