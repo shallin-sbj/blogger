@@ -37,7 +37,6 @@ repositories {
 	mavenCentral()
 }
 
-
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-web')
 
@@ -53,7 +52,7 @@ dependencies {
 	compile('org.projectlombok:lombok:1.16.16')
 
 	// 添加  Spring Data Elasticsearch 的依赖
-//	compile('org.springframework.boot:spring-boot-starter-data-elasticsearch')
+	compile('org.springframework.boot:spring-boot-starter-data-elasticsearch')
 
 	// 添加  Spring Security 依赖
 	compile('org.springframework.boot:spring-boot-starter-security')
@@ -62,7 +61,10 @@ dependencies {
 	compile('org.thymeleaf.extras:thymeleaf-extras-springsecurity4:3.0.2.RELEASE')
 
 	// 添加 Spring Boot 开发工具依赖
-	//compile("org.springframework.boot:spring-boot-devtools")
+//	compile("org.springframework.boot:spring-boot-devtools")
+
+	// 添加 spring boot aop
+//	compile("spring-boot-starter-aop");
 
 	// 添加  JNA 的依赖
 	compile('net.java.dev.jna:jna:4.3.0')
@@ -76,7 +78,6 @@ dependencies {
 
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }
-
 
 // 默认使用了 Maven 的中央仓库。这里改用自定义的镜像库
 repositories {

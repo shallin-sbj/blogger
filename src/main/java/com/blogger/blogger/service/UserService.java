@@ -3,12 +3,14 @@ package com.blogger.blogger.service;
 import com.blogger.blogger.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 /**
  * 用户服务接口
  */
+@Component
 public interface UserService {
 
     User saveOrUpdateUser(User user);

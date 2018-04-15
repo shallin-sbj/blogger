@@ -7,6 +7,7 @@ import com.blogger.blogger.service.AuthorityService;
 import com.blogger.blogger.service.UserService;
 import com.blogger.blogger.utils.ConstraintViolationExceptionHandler;
 import com.blogger.blogger.vo.Response;
+import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,7 @@ public class UserController {
      *
      * @return
      */
+    @SystemControllerAnnotation(description = "查询所有用户信息")
     private List<User> getUserlist() {
         Iterable<User> users = userService.queryAllUser();
         List<User> list = new ArrayList<>();
