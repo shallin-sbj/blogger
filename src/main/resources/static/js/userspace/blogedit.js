@@ -74,7 +74,6 @@ $(function() {
 				 } else {
 					 toastr.error("error!"+data.message);
 				 }
-				 
 		     },
 		     error : function() {
 		    	 toastr.error("error!");

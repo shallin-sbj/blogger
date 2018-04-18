@@ -1,5 +1,6 @@
 package com.blogger.blogger.controller;
 
+import com.blogger.blogger.aop.SystemControllerAnnotation;
 import com.blogger.blogger.domain.Authority;
 import com.blogger.blogger.domain.User;
 import com.blogger.blogger.service.AuthorityService;
@@ -41,11 +42,13 @@ public class MainController {
     }
 
     @GetMapping("/login")
+    @SystemControllerAnnotation(description = "登录")
     public String login() {
         return "login";
     }
 
     @GetMapping("/login-error")
+    @SystemControllerAnnotation(description = "登录错误，从新登录")
     public String loginError(Model model) {
         model.addAttribute("loginError", true);
         model.addAttribute("errorMsg", "登录错误，账号或密码错误！");
@@ -53,6 +56,7 @@ public class MainController {
     }
 
     @GetMapping("/register")
+    @SystemControllerAnnotation(description = "注册")
     public String reqister() {
         return "register";
     }
@@ -64,6 +68,7 @@ public class MainController {
      * @return
      */
     @PostMapping("/register")
+    @SystemControllerAnnotation(description = "保存新用户信息")
     public String registerUser(User user) {
         List<Authority> authorities = new ArrayList<>();
         authorities.add(authorityService.getAuthorityById(ROLE_USER_AUTHORITY_ID));

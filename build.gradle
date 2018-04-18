@@ -61,7 +61,7 @@ dependencies {
 	compile('org.thymeleaf.extras:thymeleaf-extras-springsecurity4:3.0.2.RELEASE')
 
 	// 添加 Spring Boot 开发工具依赖
-//	compile("org.springframework.boot:spring-boot-devtools")
+	compile("org.springframework.boot:spring-boot-devtools")
 
 	// 添加 spring boot aop
 //	compile("spring-boot-starter-aop");
@@ -75,6 +75,12 @@ dependencies {
 
 	// 添加apache commons long 依赖
 	compile('org.apache.commons:commons-lang3:3.5')
+
+	// 添加 Markdown parser 依赖
+	compile('es.nitaur.markdown:txtmark:0.16')
+
+	// Gson
+	compile('com.google.code.gson:gson:2.8.2')
 
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }

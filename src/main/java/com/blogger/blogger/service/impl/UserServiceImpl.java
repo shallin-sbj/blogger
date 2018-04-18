@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService,UserDetailsService {
         if (user.getId()== null) {
             return null;
         }
-        logger.info("userDetails Size is :" + user.toString());
+//        logger.info("userDetails Size is :" + user.toString());
         return (UserDetails)user;
     }
 }

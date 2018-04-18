@@ -33,7 +33,10 @@
 #        enabled: true
 
 # 配置文件服务器的地址
-#file.Server.Url:http://localhost:8081/upload
+#com:
+#   bloger:
+#     fileServiceUrl: 'http://localhost:8081/upload'
+
 
 
 

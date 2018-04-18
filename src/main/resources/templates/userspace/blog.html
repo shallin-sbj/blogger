@@ -28,7 +28,7 @@
                         </a>
                     </h2>
                     <div class="card-text">
-                        <a href="/u/waylau" th:href="'/u/' + ${blogModel.user.username}" class="card-link" th:text="${blogModel.user.username}" >waylau</a> 发表于 [[${#dates.format(blogModel.createTime, 'yyyy-MM-dd HH:mm')}]] 
+                        <a  th:href="'/u/' + ${blogModel.user.username}" class="card-link" th:text="${blogModel.user.username}" >waylau</a> 发表于 [[${#dates.format(blogModel.createTime, 'yyyy-MM-dd HH:mm')}]]
                         	<i class="fa fa-eye" aria-hidden="true">[[${blogModel.reading}]]</i>
 		                    <i class="fa fa-heart-o" aria-hidden="true">[[${blogModel.likes}]]</i> 
 		                    <i class="fa fa-comment-o" aria-hidden="true">[[${blogModel.comments}]]</i>

@@ -1,5 +1,6 @@
 package com.blogger.blogger.controller;
 
+import com.blogger.blogger.aop.SystemControllerAnnotation;
 import com.blogger.blogger.vo.Menu;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,6 +25,7 @@ public class AdminController {
      * @return
      */
     @GetMapping
+    @SystemControllerAnnotation(description = "后台管理")
     public ModelAndView userSpace(Model model) {
         List<Menu> list = new ArrayList<>();
         list.add(new Menu("用户管理", "/users"));
