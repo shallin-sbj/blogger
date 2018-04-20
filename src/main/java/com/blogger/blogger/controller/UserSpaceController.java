@@ -204,7 +204,6 @@ public class UserSpaceController {
         model.addAttribute("user", user);
 
         if (category != null) {
-
             System.out.print("category:" + category);
             System.out.print("selflink:" + "redirect:/u/" + username + "/blogs?category=" + category);
             return "/u";
@@ -212,7 +211,7 @@ public class UserSpaceController {
         }
         Page<Blog> page = null;
         if (order.equals("hot")) { // 最热查询
-            Sort sort = new Sort(Sort.Direction.DESC, "reading", "comments", "likes");
+            Sort sort = new Sort(Sort.Direction.DESC, "readSize", "comments", "likes");
             Pageable pageable = new PageRequest(pageIndex, pageSize, sort);
             page = blogService.listBlogsByTitleLikeAndSort(user, keyword, pageable);
         }

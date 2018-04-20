@@ -1,5 +1,8 @@
 /*!
  * blogedit.html 页面脚本.
+ * 
+ * @since: 1.0.0 2017-03-26
+ * @author Way Lau <https://waylau.com>
  */
 "use strict";
 //# sourceURL=blogedit.js
@@ -60,7 +63,7 @@ $(function() {
 		    url: '/u/'+ $(this).attr("userName") + '/blogs/edit',
 		    type: 'POST',
 			contentType: "application/json; charset=utf-8",
-		    data:JSON.stringify({"id":Number($('#id').val()), 
+		    data:JSON.stringify({"id":$('#blogId').val(), 
 		    	"title": $('#title').val(), 
 		    	"summary": $('#summary').val() , 
 		    	"content": $('#md').val()}),
@@ -74,6 +77,7 @@ $(function() {
 				 } else {
 					 toastr.error("error!"+data.message);
 				 }
+				 
 		     },
 		     error : function() {
 		    	 toastr.error("error!");

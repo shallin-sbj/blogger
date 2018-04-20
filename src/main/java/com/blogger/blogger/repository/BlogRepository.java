@@ -29,4 +29,8 @@ public interface BlogRepository extends JpaRepository<Blog,Long> {
      */
     Page<Blog> findByUserAndTitleLike(User user, String title, Pageable pageable);
 
+    /**
+     * 通过user查询列表
+     */
+    Page<Blog> findBlogByUser(User user,Pageable pageable);
 }

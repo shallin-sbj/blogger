@@ -12,9 +12,8 @@ $(function() {
 	var avatarApi;
 	
 	// 获取编辑用户头像的界面
-	$(".blog-content-container").on("click",".blog-edit-avatar", function () {
+	$(".blog-content-container").on("click",".blog-edit-avatar", function () { 
 		avatarApi = "/u/"+$(this).attr("userName")+"/avatar";
-		alert(avatarApi);
 		$.ajax({ 
 			 url: avatarApi, 
 			 success: function(data){
@@ -25,20 +24,6 @@ $(function() {
 		     }
 		 });
 	});
-
-    // 获取编辑用户头像的界面
-    $(".blog-content-container").on("click",".card-block", function () {
-        avatarApi = "/u/"+$(this).attr("userName")+"/avatar";
-        $.ajax({
-            url: avatarApi,
-            success: function(data){
-                $("#avatarFormContainer").html(data);
-            },
-            error : function() {
-                toastr.error("error!");
-            }
-        });
-    });
 	
 	/**  
 	 * 将以base64的图片url数据转换为Blob  
