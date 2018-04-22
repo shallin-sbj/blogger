@@ -2,8 +2,8 @@ package com.blogger.blogger.domain;
 
 import com.github.rjeschke.txtmark.Processor;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
-import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -58,7 +58,7 @@ public class Blog implements Serializable {
     private User user;
 
     @Column(nullable = false)
-    @CreatedDate
+    @CreationTimestamp  // 由数据库自动创`建时间
     private Timestamp createTime;
 
     /**
@@ -75,7 +75,7 @@ public class Blog implements Serializable {
      * 点赞量
      */
     @Column(name = "likes")
-    private Integer likeSize=0;
+    private Integer voteSize=0;
 
     /**
      * 评论
@@ -85,6 +85,11 @@ public class Blog implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "comment_id", referencedColumnName = "id"))
     private List<Comment> comments;
 
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(name = "blog_vote", joinColumns = @JoinColumn(name = "blog_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "vote_id", referencedColumnName = "id"))
+    private List<Vote> votes;
 
     /**
      * 设置内容`
@@ -118,5 +123,47 @@ public class Blog implements Serializable {
         }
 
         this.commentSize = this.comments.size();
+    }
+
+    /**
+     * 点赞
+     * @param vote
+     * @return
+     */
+    public boolean addVote(Vote vote) {
+        boolean isExist = false;
+        // 判断重复
+        for (int index=0; index < this.votes.size(); index ++ ) {
+            if (this.votes.get(index).getUser().getId() == vote.getUser().getId()) {
+                isExist = true;
+                break;
+            }
+        }
+
+        if (!isExist) {
+            this.votes.add(vote);
+            this.voteSize = this.votes.size();
+        }
+
+        return isExist;
+    }
+    /**
+     * 取消点赞
+     * @param voteId
+     */
+    public void removeVote(Long voteId) {
+        for (int index=0; index < this.votes.size(); index ++ ) {
+            if ((this.votes.get(index)).getId() == voteId) {
+                this.votes.remove(index);
+                break;
+            }
+        }
+
+        this.voteSize = this.votes.size();
+    }
+
+    public void setVotes(List<Vote> votes) {
+        this.votes = votes;
+        this.voteSize = this.votes.size();
     }
 }

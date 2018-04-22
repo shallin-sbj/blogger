@@ -3,6 +3,7 @@ package com.blogger.blogger.controller;
 import com.blogger.blogger.aop.SystemControllerAnnotation;
 import com.blogger.blogger.domain.Blog;
 import com.blogger.blogger.domain.User;
+import com.blogger.blogger.domain.Vote;
 import com.blogger.blogger.service.BlogService;
 import com.blogger.blogger.service.UserService;
 import com.blogger.blogger.utils.ConstraintViolationExceptionHandler;
@@ -143,53 +144,6 @@ public class UserSpaceController {
         return "redirect:/u/" + username + "/blogs";
     }
 
-//    /**
-//     * @param username  用户名
-//     * @param order     内容
-//     * @param category  资源类型
-//     * @param keyword   关键字
-//     * @param async
-//     * @param pageIndex
-//     * @param pageSize
-//     * @param model
-//     * @return
-//     */
-//    @GetMapping("/{username}/blogs")
-//    @SystemControllerAnnotation(description = "获取用户博客列表")
-//    public String listBlogsByOrder(
-//            @PathVariable("username") String username,
-//            @RequestParam(value = "order", required = false, defaultValue = "new") String order,
-//            @RequestParam(value = "category", required = false) Long category,
-//            @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
-//            @RequestParam(value = "async", required = false) boolean async,
-//            @RequestParam(value = "pageIndex", required = false, defaultValue = "0") int pageIndex,
-//            @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize,
-//            Model model) {
-//        User user = (User) userDetailsService.loadUserByUsername(username);
-//        model.addAttribute("user", user);
-//
-//        if (category != null) {
-//            System.out.print("category:" + category);
-//            System.out.print("selflink:" + "redirect:/u/" + username + "/blogs?category=" + category);
-//            return "/u";
-//        }
-//        Page<Blog> page = null;
-//        if (order.equals("hot")) { // 最热查询
-//            Sort sort = new Sort(Sort.Direction.DESC, "reading", "comments", "likes");
-//            Pageable pageable = new PageRequest(pageIndex, pageSize, sort);
-//            page = blogService.listBlogsByTitleLikeAndSort(user, keyword, pageable);
-//        }
-//        if (order.equals("new")) { // 最新查询
-//            Pageable pageable = new PageRequest(pageIndex, pageSize);
-//            page = blogService.listBlogsByTitleLike(user, keyword, pageable);
-//        }
-//        List<Blog> list = page.getContent();    // 当前所在页面数据列表
-//        model.addAttribute("order", order);
-//        model.addAttribute("page", page);
-//        model.addAttribute("blogList", list);
-//        return (async == true ? "/userspace/u :: #mainContainerRepleace" : "/userspace/u");
-//    }
-
     @GetMapping("/{username}/blogs")
     @SystemControllerAnnotation(description = "获取个人主页信息")
     public String listBlogsByOrder(@PathVariable("username") String username,
@@ -235,20 +189,34 @@ public class UserSpaceController {
     @GetMapping("/{username}/blogs/{id}")
     @SystemControllerAnnotation(description = "获取博客展示页面")
     public String getBlogById(@PathVariable("username") String username, @PathVariable("id") Long id, Model model) {
+        User principal = null;
         // 每次读取，简单的可以认为阅读量增加1次
         blogService.readingIncrease(id);
+        Blog blog = blogService.getBlogById(id);
         boolean isBlogOwner = false;
         // 判断操作用户是否是博客的所有者
         if (SecurityContextHolder.getContext().getAuthentication() != null
                 && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
                 && !SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString().equals("anonymousUser")) {
-            User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (principal != null && username.equals(principal.getUsername())) {
                 isBlogOwner = true;
             }
         }
+        // 判断操作用户的点赞情况
+        List<Vote> votes = blog.getVotes();
+        Vote currentVote = null; // 当前用户的点赞情况
+
+        if (principal !=null) {
+            for (Vote vote : votes) {
+                vote.getUser().getUsername().equals(principal.getUsername());
+                currentVote = vote;
+                break;
+            }
+        }
         model.addAttribute("isBlogOwner", isBlogOwner);
         model.addAttribute("blogModel", blogService.getBlogById(id));
+        model.addAttribute("currentVote",currentVote);
         return "/userspace/blog";
     }
 

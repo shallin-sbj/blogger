@@ -1,6 +1,8 @@
 package com.blogger.blogger.aop;
 
 import com.blogger.blogger.service.ILogService;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.slf4j.Logger;
@@ -12,6 +14,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
+import java.util.Date;
 import java.util.Enumeration;
 
 /**
@@ -23,11 +26,22 @@ public class SystemAspect {
 
     private final Logger logger = LoggerFactory.getLogger(SystemAspect.class);
 
+    protected final Gson gson = new GsonBuilder()
+            .setDateFormat("yyyy.MM.dd HH:mm:ss").create();
+
     @Autowired
     private ILogService logService;
 
     @Pointcut("@annotation(com.blogger.blogger.aop.SystemControllerAnnotation)")
     public void controllerPoint() {
+    }
+
+
+    /**
+     * Service层切点
+     */
+    @Pointcut("@annotation(com.blogger.blogger.aop.SystemServiceLog)")
+    public void serviceAspect() {
     }
 
     @Before("controllerPoint()")
@@ -68,8 +82,7 @@ public class SystemAspect {
     /**
      * 获取注解中对方法的描述信息 用于service层注解
      *
-     * @param joinPoint
-     *        切点
+     * @param joinPoint 切点
      * @return 方法描述
      * @throws Exception
      */
@@ -94,9 +107,32 @@ public class SystemAspect {
         return description;
     }
 
-    @AfterThrowing(pointcut = "controllerPoint()", throwing = "e")
+    @AfterThrowing(pointcut = "controllerPoint(),serviceAspect()", throwing = "e")
     public void doAfterThrowing(JoinPoint joinPoint, Throwable e) {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
+                .getRequestAttributes()).getRequest();
+        //获取请求ip
+        String ip = request.getRemoteAddr();
+        //获取用户请求方法的参数并序列化为JSON格式字符串
+        String params = "";
+        if (joinPoint.getArgs() != null && joinPoint.getArgs().length > 0) {
+            for (int i = 0; i < joinPoint.getArgs().length; i++) {
+                params += this.gson.toJson(joinPoint.getArgs()[i]) + ";";
+            }
+        }
+        try {
+            /* ========控制台输出========= */
+            logger.info("=====异常通知开始=====");
+            logger.info("异常代码:" + e.getClass().getName());
+            logger.info("异常信息:" + e.getMessage());
+            logger.info("异常方法:" + joinPoint.getTarget().getClass().getName()
+                    + "." + joinPoint.getSignature().getName() + "()");
+            logger.info("方法描述:" + getServiceMthodDescription(joinPoint));
+            logger.info("请求IP:" + ip);
+            logger.info("请求参数:" + params);
+            logger.info("=====异常通知结束=====");
+        } catch (Exception e1) {
 
+        }
     }
-
 }

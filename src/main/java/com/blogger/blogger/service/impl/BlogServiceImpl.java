@@ -3,9 +3,11 @@ package com.blogger.blogger.service.impl;
 import com.blogger.blogger.domain.Blog;
 import com.blogger.blogger.domain.Comment;
 import com.blogger.blogger.domain.User;
+import com.blogger.blogger.domain.Vote;
 import com.blogger.blogger.repository.BlogRepository;
 import com.blogger.blogger.repository.CommentReposityory;
 import com.blogger.blogger.service.BlogService;
+import com.blogger.blogger.service.VoteService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,6 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Optional;
 
 /**
@@ -27,6 +31,8 @@ public class BlogServiceImpl implements BlogService {
     @Autowired
     private CommentReposityory commentReposityory;
 
+    @Autowired
+    private VoteService voteService;
     @Override
     public Blog saveBlog(Blog blog) {
         return blogRepository.save(blog);
@@ -84,7 +90,8 @@ public class BlogServiceImpl implements BlogService {
         if (blogs.isPresent()) {
             Blog originalBlog = blogs.get();
             User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            Comment comment = new Comment(commentContent, user);
+            Comment comment = new Comment(user, commentContent);
+            comment.setCreateTime(new Timestamp(new Date().getTime()));
             originalBlog.addComment(comment);
             return blogRepository.save(originalBlog);
         }
@@ -97,6 +104,32 @@ public class BlogServiceImpl implements BlogService {
         if (blogs.isPresent()) {
             Blog originalBlog = blogs.get();
             originalBlog.removeComment(commentId);
+            blogRepository.save(originalBlog);
+        }
+    }
+
+    @Override
+    public Blog createVote(Long blogId) {
+        Optional<Blog> blogs = blogRepository.findById(blogId);
+        if (blogs.isPresent()) {
+            Blog originalBlog = blogRepository.findById(blogId).get();
+            User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            Vote vote = new Vote(user);
+            boolean isExist = originalBlog.addVote(vote);
+            if (isExist) {
+                throw new IllegalArgumentException("该用户已经点过赞了");
+            }
+            return blogRepository.save(originalBlog);
+        }
+        return new Blog();
+    }
+
+    @Override
+    public void removeVote(Long blogId, Long voteId) {
+        Optional<Blog> blogs = blogRepository.findById(blogId);
+        if (blogs.isPresent()) {
+            Blog originalBlog = blogRepository.findById(blogId).get();
+            originalBlog.removeVote(voteId);
             blogRepository.save(originalBlog);
         }
     }

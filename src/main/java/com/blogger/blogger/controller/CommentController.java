@@ -73,8 +73,10 @@ public class CommentController {
         try {
             blogService.createComment(blogId, commentContent);
         } catch (ConstraintViolationException e) {
+            e.printStackTrace();
             return ResponseEntity.ok().body(new Response(false, ConstraintViolationExceptionHandler.getMessage(e)));
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.ok().body(new Response(false, e.getMessage()));
         }
 
@@ -109,11 +111,12 @@ public class CommentController {
             blogService.removeComment(blogId, id);
             commentService.removeComment(id);
         } catch (ConstraintViolationException e) {
+            e.printStackTrace();
             return ResponseEntity.ok().body(new Response(false, ConstraintViolationExceptionHandler.getMessage(e)));
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.ok().body(new Response(false, e.getMessage()));
         }
-
         return ResponseEntity.ok().body(new Response(true, "处理成功", null));
     }
 }
