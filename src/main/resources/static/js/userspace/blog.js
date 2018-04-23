@@ -1,13 +1,4 @@
-/*!
- * blog.html 页面脚本.
- * 
- * @since: 1.0.0 2017-03-26
- * @author Way Lau <https://waylau.com>
- */
 "use strict";
-//# sourceURL=blog.js
-
-// DOM 加载完再执行
 $(function() {
 	$.catalog("#catalog", ".post-content");
 	
@@ -146,7 +137,7 @@ $(function() {
 		 });
 	});
 	
-	// 提交点赞
+	// 取消点赞
 	$(".blog-content-container").on("click","#cancelVote", function () { 
 		// 获取 CSRF Token 
 		var csrfToken = $("meta[name='_csrf']").attr("content");

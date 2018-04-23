@@ -1,6 +1,7 @@
 package com.blogger.blogger.repository;
 
 import com.blogger.blogger.domain.Blog;
+import com.blogger.blogger.domain.Catalog;
 import com.blogger.blogger.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,4 +34,10 @@ public interface BlogRepository extends JpaRepository<Blog,Long> {
      * 通过user查询列表
      */
     Page<Blog> findBlogByUser(User user,Pageable pageable);
+
+
+    /**
+     * 根据分类查询博客列表
+     */
+    Page<Blog> findBlogByCatalog(Catalog catalog,Pageable pageable);
 }

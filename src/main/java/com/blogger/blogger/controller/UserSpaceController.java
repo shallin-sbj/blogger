@@ -2,12 +2,15 @@ package com.blogger.blogger.controller;
 
 import com.blogger.blogger.aop.SystemControllerAnnotation;
 import com.blogger.blogger.domain.Blog;
+import com.blogger.blogger.domain.Catalog;
 import com.blogger.blogger.domain.User;
 import com.blogger.blogger.domain.Vote;
 import com.blogger.blogger.service.BlogService;
+import com.blogger.blogger.service.CatalogService;
 import com.blogger.blogger.service.UserService;
 import com.blogger.blogger.utils.ConstraintViolationExceptionHandler;
 import com.blogger.blogger.vo.Response;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,6 +46,9 @@ public class UserSpaceController {
     private UserService userService;
     @Autowired
     private BlogService blogService;
+
+    @Autowired
+    private CatalogService catalogService;
 
     //    @Autowired
 //    private MyConfig config;
@@ -148,7 +154,7 @@ public class UserSpaceController {
     @SystemControllerAnnotation(description = "获取个人主页信息")
     public String listBlogsByOrder(@PathVariable("username") String username,
                                    @RequestParam(value = "order", required = false, defaultValue = "new") String order,
-                                   @RequestParam(value = "category", required = false) Long category,
+                                   @RequestParam(value = "category", required = false) Long catalogId,
                                    @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
                                    @RequestParam(value = "async", required = false) boolean async,
                                    @RequestParam(value = "pageIndex", required = false, defaultValue = "0") int pageIndex,
@@ -156,28 +162,28 @@ public class UserSpaceController {
                                    Model model) {
         User user = (User) userDetailsService.loadUserByUsername(username);
         model.addAttribute("user", user);
-
-        if (category != null) {
-            System.out.print("category:" + category);
-            System.out.print("selflink:" + "redirect:/u/" + username + "/blogs?category=" + category);
-            return "/u";
-
-        }
         Page<Blog> page = null;
-        if (order.equals("hot")) { // 最热查询
+        Pageable pageable = null;
+        if (catalogId != null) { // 分类查询
+            Catalog catalog = catalogService.getCatalogById(catalogId);
+            pageable = new PageRequest(pageIndex, pageSize);
+            page = blogService.listBlogsByCatalog(catalog, pageable);
+            order = "";
+        } else if (order.equals("hot")) { // 最热查询
             Sort sort = new Sort(Sort.Direction.DESC, "readSize", "comments", "likes");
-            Pageable pageable = new PageRequest(pageIndex, pageSize, sort);
+            pageable = new PageRequest(pageIndex, pageSize, sort);
             page = blogService.listBlogsByTitleLikeAndSort(user, keyword, pageable);
-        }
-        if (order.equals("new")) { // 最新查询
-            Pageable pageable = new PageRequest(pageIndex, pageSize);
+        } else if (order.equals("new")) { // 最新查询
+            pageable = new PageRequest(pageIndex, pageSize);
             page = blogService.listBlogsByTitleLike(user, keyword, pageable);
         }
 
-
         List<Blog> list = page.getContent();    // 当前所在页面数据列表
 
+        model.addAttribute("user", user);
         model.addAttribute("order", order);
+        model.addAttribute("catalogId", catalogId);
+        model.addAttribute("keyword", keyword);
         model.addAttribute("page", page);
         model.addAttribute("blogList", list);
         return (async == true ? "/userspace/u :: #mainContainerRepleace" : "/userspace/u");
@@ -190,7 +196,7 @@ public class UserSpaceController {
     @SystemControllerAnnotation(description = "获取博客展示页面")
     public String getBlogById(@PathVariable("username") String username, @PathVariable("id") Long id, Model model) {
         User principal = null;
-        // 每次读取，简单的可以认为阅读量增加1次
+        // 每次读取，简单的可以认为阅读量增加1次Blog
         blogService.readingIncrease(id);
         Blog blog = blogService.getBlogById(id);
         boolean isBlogOwner = false;
@@ -207,7 +213,7 @@ public class UserSpaceController {
         List<Vote> votes = blog.getVotes();
         Vote currentVote = null; // 当前用户的点赞情况
 
-        if (principal !=null) {
+        if (principal != null) {
             for (Vote vote : votes) {
                 vote.getUser().getUsername().equals(principal.getUsername());
                 currentVote = vote;
@@ -216,7 +222,7 @@ public class UserSpaceController {
         }
         model.addAttribute("isBlogOwner", isBlogOwner);
         model.addAttribute("blogModel", blogService.getBlogById(id));
-        model.addAttribute("currentVote",currentVote);
+        model.addAttribute("currentVote", currentVote);
         return "/userspace/blog";
     }
 
@@ -242,9 +248,12 @@ public class UserSpaceController {
      */
     @GetMapping("/{username}/blogs/edit")
     @SystemControllerAnnotation(description = "获取新增博客的界面")
-    public ModelAndView createBlog(Model model) {
+    public ModelAndView createBlog(@PathVariable("username") String username, Model model) {
+        User user = (User) userDetailsService.loadUserByUsername(username);
+        List<Catalog> catalogs = catalogService.listCatalogs(user);
         model.addAttribute("blog", new Blog());
         model.addAttribute("fileServerUrl", fileServiceUrl);
+        model.addAttribute("catalogs", catalogs);
         return new ModelAndView("/userspace/blogedit", "blogModel", model);
     }
 
@@ -259,8 +268,11 @@ public class UserSpaceController {
     @GetMapping("/{username}/blogs/edit/{id}")
     @SystemControllerAnnotation(description = "编辑博客")
     public ModelAndView editBlog(@PathVariable("username") String username, @PathVariable("id") Long id, Model model) {
+        User user = (User) userDetailsService.loadUserByUsername(username);
+        List<Catalog> catalogs = catalogService.listCatalogs(user);
         model.addAttribute("blog", blogService.getBlogById(id));
         model.addAttribute("fileServerUrl", fileServiceUrl);
+        model.addAttribute("catalogs", catalogs);
         return new ModelAndView("userspace/blogedit", "blogModel", model);
     }
 
@@ -275,11 +287,30 @@ public class UserSpaceController {
     @PreAuthorize("authentication.name.equals(#username)")
     @SystemControllerAnnotation(description = "保存博客")
     public ResponseEntity<Response> saveBlog(@PathVariable("username") String username, @RequestBody Blog blog) {
-        User user = (User) userDetailsService.loadUserByUsername(username);
-        blog.setUser(user);
-        blog.setCreateTime(new Timestamp(new Date().getTime()));
+
+        // 判空处理
+        if (blog.getCatalog().getId() == null) {
+            return ResponseEntity.ok().body(new Response(false, "未选择分类"));
+        }
+        if (StringUtils.isEmpty(blog.getTags())) {
+            return ResponseEntity.ok().body(new Response(false, "请填写标签"));
+        }
         try {
-            blogService.saveBlog(blog);
+            // new or modify
+            if (blog.getId() != null) {
+                Blog orignalBlog = blogService.getBlogById(blog.getId());
+                orignalBlog.setTitle(blog.getTitle());
+                orignalBlog.setContent(blog.getContent());
+                orignalBlog.setSummary(blog.getSummary());
+                orignalBlog.setCatalog(blog.getCatalog());
+                orignalBlog.setTags(blog.getTags());
+                blogService.saveBlog(orignalBlog);
+            } else {
+                User user = (User) userDetailsService.loadUserByUsername(username);
+                blog.setUser(user);
+                blog.setCreateTime(new Timestamp(new Date().getTime()));
+                blogService.saveBlog(blog);
+            }
         } catch (ConstraintViolationException e) {
             return ResponseEntity.ok().body(new Response(false, ConstraintViolationExceptionHandler.getMessage(e)));
         } catch (Exception e) {

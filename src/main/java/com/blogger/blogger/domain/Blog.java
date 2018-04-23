@@ -65,6 +65,7 @@ public class Blog implements Serializable {
      * 访问量、阅读量
      */
     @Column(name = "readSize")
+    @Basic(fetch = FetchType.LAZY)
     private Integer readSize=0;
     /**
      * 评论量
@@ -90,6 +91,26 @@ public class Blog implements Serializable {
     @JoinTable(name = "blog_vote", joinColumns = @JoinColumn(name = "blog_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "vote_id", referencedColumnName = "id"))
     private List<Vote> votes;
+
+    @OneToOne(cascade = CascadeType.DETACH,fetch = FetchType.LAZY)
+    @JoinColumn(name = "catalog_id")
+    private Catalog catalog;
+
+    /**
+     *  标签
+     */
+    @Column(name="tags", length = 100)
+    private String tags;
+
+
+
+
+
+
+
+
+
+
 
     /**
      * 设置内容`
@@ -126,7 +147,7 @@ public class Blog implements Serializable {
     }
 
     /**
-     * 点赞
+     *   点赞
      * @param vote
      * @return
      */

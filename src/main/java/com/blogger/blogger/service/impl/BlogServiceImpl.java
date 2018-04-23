@@ -1,13 +1,8 @@
 package com.blogger.blogger.service.impl;
 
-import com.blogger.blogger.domain.Blog;
-import com.blogger.blogger.domain.Comment;
-import com.blogger.blogger.domain.User;
-import com.blogger.blogger.domain.Vote;
+import com.blogger.blogger.domain.*;
 import com.blogger.blogger.repository.BlogRepository;
-import com.blogger.blogger.repository.CommentReposityory;
 import com.blogger.blogger.service.BlogService;
-import com.blogger.blogger.service.VoteService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,11 +23,6 @@ public class BlogServiceImpl implements BlogService {
     @Autowired
     private BlogRepository blogRepository;
 
-    @Autowired
-    private CommentReposityory commentReposityory;
-
-    @Autowired
-    private VoteService voteService;
     @Override
     public Blog saveBlog(Blog blog) {
         return blogRepository.save(blog);
@@ -59,8 +49,8 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public Page<Blog> listBlogsByTitleLike(User user, String title, Pageable pageable) {
-        if (StringUtils.isEmpty(title)){
-            return blogRepository.findBlogByUser(user,pageable);
+        if (StringUtils.isEmpty(title)) {
+            return blogRepository.findBlogByUser(user, pageable);
         }
         title = "%" + title + "%";
         Page<Blog> blogs = blogRepository.findByUserAndTitleLikeOrderByCreateTimeDesc(user, title, pageable);
@@ -69,6 +59,9 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public Page<Blog> listBlogsByTitleLikeAndSort(User user, String title, Pageable pageable) {
+        if (StringUtils.isEmpty(title)) {
+            return blogRepository.findBlogByUser(user, pageable);
+        }
         title = "%" + title + "%";
         Page<Blog> blogs = blogRepository.findByUserAndTitleLike(user, title, pageable);
         return blogs;
@@ -132,5 +125,10 @@ public class BlogServiceImpl implements BlogService {
             originalBlog.removeVote(voteId);
             blogRepository.save(originalBlog);
         }
+    }
+
+    @Override
+    public Page<Blog> listBlogsByCatalog(Catalog catalog, Pageable pageable) {
+        return blogRepository.findBlogByCatalog(catalog, pageable);
     }
 }
