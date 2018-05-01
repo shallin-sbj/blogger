@@ -8,6 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -28,5 +29,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * 根据用户号码进行查询
      */
    User findByUsername(String username);
+
+    /**
+     * 根据名称列表查询
+     * @param usernames
+     * @return
+     */
+    List<User> findByUsernameIn(Collection<String> usernames);
 
 }

@@ -16,7 +16,9 @@
         ddl-auto: update
     data:
       elasticsearch:
-        cluster-name: localhost:9300!
+        cluster-name: D3mesjh
+        cluster-nodes: 127.0.0.1:9300
+
   ## 配置日志信息
   logging:
     pattern:

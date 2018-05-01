@@ -1,3 +1,7 @@
+/**
+ * Bolg main JS.
+ * Created by waylau.com on 2017/3/9.
+ */
 "use strict";
 //# sourceURL=main.js
 
@@ -19,4 +23,4 @@ $(function() {
         $("html,body").animate({scrollTop:"0px"},200);
     });
     NProgress.done();
- });
+});
