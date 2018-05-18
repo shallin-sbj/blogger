@@ -1,8 +1,10 @@
 package com.blogger.blogger.service.impl;
 
 import com.blogger.blogger.domain.*;
+import com.blogger.blogger.domain.es.EsBlog;
 import com.blogger.blogger.repository.BlogRepository;
 import com.blogger.blogger.service.BlogService;
+import com.blogger.blogger.service.EsBlogService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,14 +25,33 @@ public class BlogServiceImpl implements BlogService {
     @Autowired
     private BlogRepository blogRepository;
 
+    @Autowired
+    private EsBlogService esBlogService;
+
     @Override
-    public Blog saveBlog(Blog blog) {
-        return blogRepository.save(blog);
+    public Blog saveBlog(Blog blog) throws Exception {
+        boolean isNew = (blog.getId() == null);
+        EsBlog esBlog = null;
+        Blog repositoryBlog = blogRepository.save(blog);
+        if (isNew) {
+            esBlog = new EsBlog(repositoryBlog);
+        } else {
+            try {
+                esBlog = esBlogService.getEsBlogByBlogId(blog.getId());
+                esBlog.update(repositoryBlog);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        esBlogService.updateEsBlog(esBlog);
+        return repositoryBlog;
     }
 
     @Override
-    public void removeBlog(Long id) {
+    public void removeBlog(Long id) throws Exception {
         blogRepository.deleteById(id);
+        EsBlog blog = esBlogService.getEsBlogByBlogId(id);
+        esBlogService.removeEsBlog(blog.getId());
     }
 
     @Override

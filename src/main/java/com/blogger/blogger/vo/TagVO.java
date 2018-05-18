@@ -2,6 +2,9 @@ package com.blogger.blogger.vo;
 
 import lombok.Data;
 
+/**
+ * tag 值对象
+ */
 @Data
 public class TagVO {
 

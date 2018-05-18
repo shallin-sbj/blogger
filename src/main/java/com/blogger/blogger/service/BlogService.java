@@ -5,6 +5,7 @@ import com.blogger.blogger.domain.Catalog;
 import com.blogger.blogger.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 博客Service
@@ -16,20 +17,23 @@ public interface BlogService {
      * @param 
      * @return
      */
-    Blog saveBlog(Blog blog);
+    @Transactional
+    Blog saveBlog(Blog blog) throws Exception;
 
     /**
      * 删除Blog
      * @param id
      * @return
      */
-    void removeBlog(Long id);
+    @Transactional
+    void removeBlog(Long id) throws Exception;
 
     /**
      * 更新Blog
      * @param
      * @return
      */
+    @Transactional
     Blog updateBlog(Blog blog);
 
     /**
@@ -37,6 +41,7 @@ public interface BlogService {
      * @param id
      * @return
      */
+    @Transactional
     Blog getBlogById(Long id);
 
     /**
@@ -44,6 +49,7 @@ public interface BlogService {
      * @param user
      * @return
      */
+    @Transactional
     Page<Blog> listBlogsByTitleLike(User user, String title, Pageable pageable);
 
     /**
@@ -51,6 +57,7 @@ public interface BlogService {
      * @param
      * @return
      */
+    @Transactional
     Page<Blog> listBlogsByTitleLikeAndSort(User suser, String title, Pageable pageable);
 
     /**
@@ -65,6 +72,7 @@ public interface BlogService {
      * @param commentContent
      * @return
      */
+    @Transactional
     Blog createComment(Long blogId, String commentContent);
 
     /**
@@ -73,6 +81,7 @@ public interface BlogService {
      * @param commentId
      * @return
      */
+    @Transactional
     void removeComment(Long blogId, Long commentId);
 
     /**
@@ -80,6 +89,7 @@ public interface BlogService {
      * @param blogId
      * @return
      */
+    @Transactional
     Blog createVote(Long blogId);
 
     /**

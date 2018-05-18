@@ -32,13 +32,15 @@ public class MainController {
 
 
     @GetMapping("/")
+    @SystemControllerAnnotation(description = "redirect:/index")
     public String root() {
         return "redirect:/index";
     }
 
     @GetMapping("/index")
+    @SystemControllerAnnotation(description = "index")
     public String index() {
-        return "index";
+        return "redirect:/blogs";
     }
 
     @GetMapping("/login")
@@ -78,6 +80,7 @@ public class MainController {
     }
 
     @GetMapping("/search")
+    @SystemControllerAnnotation(description = "查询")
     public String search() {
         return "search";
     }

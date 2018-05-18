@@ -1,5 +1,6 @@
 package com.blogger.blogger.controller;
 
+import com.blogger.blogger.aop.SystemControllerAnnotation;
 import com.blogger.blogger.domain.Catalog;
 import com.blogger.blogger.domain.User;
 import com.blogger.blogger.service.CatalogService;
@@ -31,6 +32,7 @@ public class CatalogController {
     private UserDetailsService userDetailsService;
 
     @GetMapping
+    @SystemControllerAnnotation(description = "获取评论列表")
     public String listComments(@RequestParam(value = "username", required = true) String username, Model model) {
         User user = (User) userDetailsService.loadUserByUsername(username);
         List<Catalog> catalogList = catalogService.listCatalogs(user);
@@ -51,6 +53,7 @@ public class CatalogController {
 
     @PostMapping
     @PreAuthorize("authentication.name.equals(#catalogVO.username)")
+    @SystemControllerAnnotation(description = "创建博客")
     public ResponseEntity<Response> create(@RequestBody CatalogVO catalogVO) {
         Catalog catalog = catalogVO.getCatalog();
         String username = catalogVO.getUsername();
@@ -75,6 +78,7 @@ public class CatalogController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("authentication.name.equals(#username)")  // 指定用户才能操作方法
+    @SystemControllerAnnotation(description = "删除博客")
     public ResponseEntity<Response> delete(String username, @PathVariable("id") Long id) {
         try {
             catalogService.removeCatalog(id);
@@ -93,6 +97,7 @@ public class CatalogController {
      * @return
      */
     @GetMapping("/edit")
+    @SystemControllerAnnotation(description = "获取分类编辑界面")
     public String getCatalogEdit(Model model) {
         Catalog catalog = new Catalog(null, null);
         model.addAttribute("catalog", catalog);
@@ -107,6 +112,7 @@ public class CatalogController {
      * @return
      */
     @GetMapping("/edit/{id}")
+    @SystemControllerAnnotation(description = "根据 Id 获取分类信息")
     public String getCatalogById(@PathVariable("id") Long id, Model model) {
         Catalog catalog = catalogService.getCatalogById(id);
         model.addAttribute("catalog", catalog);

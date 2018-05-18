@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+>
 <head th:replace="~{fragments/header :: header}">
 </head>
 <body>
@@ -26,11 +26,9 @@
 						        </span>
 		                        <a href="/u/waylau/blogs/1" class="card-link" title="waylau" 
 		                        	th:href="'/u/' + ${blog.username} + '/blogs/'+ ${blog.blogId}"  th:title="${blog.title}" th:text="${blog.title}">
-		                            OAuth 2.0 认证的原理与实践
 		                        </a>
 		                    </h2>
-		                    <p class="card-text" th:text="${blog.summary}">使用 OAuth 2.0 认证的的好处是显然易见的。你只需要用同一个账号密码，就能在各个网站进行访问，而免去了在每个网站都进行注册的繁琐过程。 本文将介绍
-		                        OAuth 2.0 的原理，并基于 Spring Security 和 GitHub 账号，来演示 OAuth 2.0 的认证的过程。</p>
+		                    <p class="card-text" th:text="${blog.summary}"></p>
 		                    <div class="card-text">
 		                        <a href="/u/waylau" th:href="'/u/' + ${blog.username}" class="card-link" th:text=${blog.username}>waylau</a> 发表于 [[${#dates.format(blog.createTime, 'yyyy-MM-dd HH:mm')}]] <i class="fa fa-eye" aria-hidden="true">[[${blog.readSize}]]</i>
 		                        <i class="fa fa-heart-o" aria-hidden="true">[[${blog.voteSize}]]</i> <i class="fa fa-comment-o"
@@ -55,7 +53,7 @@
                         <div class="row">
                             <div class="col-lg-12" >
                                 <a th:each="tag, tagStat : ${tags}" th:object="${tag}" href="/blogs?keyword=1" th:href="'/blogs?keyword=' +  *{name}"> <span class="badge" 
-                                th:classappend="${tagStat.index} eq 0 ? 'badge-danger': (${tagStat.index} eq 1 ? 'badge-warning':(${tagStat.index} eq 2 ? 'badge-info':'badge-default'))"th:text="*{name}">Web Design</span></a>
+                                th:classappend="${tagStat.index} eq 0 ? 'badge-danger': (${tagStat.index} eq 1 ? 'badge-warning':(${tagStat.index} eq 2 ? 'badge-info':'badge-default'))"th:text="*{name}"></span></a>
                             </div>
                         </div>
                     </div>

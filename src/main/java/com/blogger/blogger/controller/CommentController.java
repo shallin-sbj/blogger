@@ -1,5 +1,6 @@
 package com.blogger.blogger.controller;
 
+import com.blogger.blogger.aop.SystemControllerAnnotation;
 import com.blogger.blogger.domain.Blog;
 import com.blogger.blogger.domain.Comment;
 import com.blogger.blogger.domain.User;
@@ -40,6 +41,7 @@ public class CommentController {
      * @return
      */
     @GetMapping
+    @SystemControllerAnnotation(description = "获取评论列表")
     public String listComments(@RequestParam(value = "blogId", required = true) Long blogId, Model model) {
         Blog blog = blogService.getBlogById(blogId);
         List<Comment> comments = blog.getComments();
@@ -68,6 +70,7 @@ public class CommentController {
      */
     @PostMapping
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")  // 指定角色权限才能操作方法
+    @SystemControllerAnnotation(description = "发表评论")
     public ResponseEntity<Response> createComment(Long blogId, String commentContent) {
 
         try {
@@ -89,6 +92,7 @@ public class CommentController {
      * @return
      */
     @DeleteMapping("/{id}")
+    @SystemControllerAnnotation(description = "删除评论")
     public ResponseEntity<Response> deleteBlog(@PathVariable("id") Long id, Long blogId) {
 
         boolean isOwner = false;

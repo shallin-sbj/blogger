@@ -51,11 +51,12 @@ public class SystemAspect {
         HttpServletRequest request = attributes.getRequest();
 
         // 记录下请求内容
-        logger.info("URL : " + request.getRequestURL().toString());
-        logger.info("HTTP_METHOD : " + request.getMethod());
+        logger.info("===================================================== " );
+        logger.info("/n 请求URL : " + request.getRequestURL().toString());
+//        logger.info("HTTP_METHOD : " + request.getMethod());
         logger.info("SystemControllerAnnotation :" + getServiceMthodDescription(joinPoint));
-        logger.info("IP : " + request.getRemoteAddr());
-        logger.info("CLASS_METHOD : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
+//        logger.info("IP : " + request.getRemoteAddr());
+        logger.info("调用的方法 : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
         StringBuffer parameters = new StringBuffer();
         Enumeration paramNames = request.getParameterNames();
         while (paramNames.hasMoreElements()) {
@@ -68,14 +69,14 @@ public class SystemAspect {
                 parameters.append(";");
             }
         }
-        logger.info("request parameters: " + parameters.toString());
+        logger.info("请求参数 " + parameters.toString());
     }
 
 
     @AfterReturning(returning = "ret", pointcut = "controllerPoint()")
     public void doAfterReturning(Object ret) throws Throwable {
         // 处理完请求，返回内容
-        logger.info("RESPONSE : " + ret);
+        logger.info("返回结果 : " + ret);
     }
 
 

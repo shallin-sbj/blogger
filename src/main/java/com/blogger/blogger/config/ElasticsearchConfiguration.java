@@ -32,8 +32,8 @@ public class ElasticsearchConfiguration implements FactoryBean<TransportClient>,
     @Value("${spring.data.elasticsearch.cluster-nodes}")
     private String clusterNodes ;
 
-    @Value("${spring.data.elasticsearch.cluster-name}")
-    private String clusterName;
+//    @Value("${spring.data.elasticsearch.cluster-name}")
+//    private String clusterName;
 
     private TransportClient client;
 
@@ -91,7 +91,7 @@ public class ElasticsearchConfiguration implements FactoryBean<TransportClient>,
      */
     private Settings settings(){
         Settings settings = Settings.builder()
-                .put("cluster.name",clusterName)
+//                .put("cluster.name",clusterName)
                 .put("client.transport.sniff",true).build();  // 自动把集群下的机器添加到列表中
         client = new PreBuiltTransportClient(settings);
         return settings;

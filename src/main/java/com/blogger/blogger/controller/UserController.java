@@ -28,6 +28,7 @@ import java.util.List;
 
 /**
  * 用户控制器.
+ * 用户管理
  */
 @RestController
 @RequestMapping("/users")

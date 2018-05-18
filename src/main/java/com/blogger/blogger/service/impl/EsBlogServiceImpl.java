@@ -83,7 +83,8 @@ public class EsBlogServiceImpl implements EsBlogService {
         if (pageable.getSort() == null) {
             pageable = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(), sort);
         }
-        return esBlogRepository.findDistinctEsBlogByTitleContainingOrSummaryContainingOrContentContainingOrTagsContaining(keyword, keyword, keyword, keyword, pageable);
+        Page<EsBlog> blog = esBlogRepository.findDistinctEsBlogByTitleContainingOrSummaryContainingOrContentContainingOrTagsContaining(keyword, keyword, keyword, keyword, pageable);
+        return blog;
     }
 
     @Override
@@ -122,8 +123,7 @@ public class EsBlogServiceImpl implements EsBlogService {
         });
 
         StringTerms modelTerms = (StringTerms) aggregations.asMap().get("tags");
-
-        Iterator<Terms.Bucket> modelBucketIt = modelTerms.getBuckets().iterator();
+        Iterator<StringTerms.Bucket> modelBucketIt = modelTerms.getBuckets().iterator();
         while (modelBucketIt.hasNext()) {
             Terms.Bucket actiontypeBucket = modelBucketIt.next();
             list.add(new TagVO(actiontypeBucket.getKey().toString(),
@@ -152,7 +152,7 @@ public class EsBlogServiceImpl implements EsBlogService {
 
         StringTerms modelTerms = (StringTerms) aggregations.asMap().get("users");
 
-        Iterator<Terms.Bucket> modelBucketIt = modelTerms.getBuckets().iterator();
+        Iterator<StringTerms.Bucket> modelBucketIt = modelTerms.getBuckets().iterator();
         while (modelBucketIt.hasNext()) {
             Terms.Bucket actiontypeBucket = modelBucketIt.next();
             String username = actiontypeBucket.getKey().toString();
